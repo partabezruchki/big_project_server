@@ -1,0 +1,10 @@
+const router = require("express").Router();
+const PostController = require("../controllers/post.controller");
+const authMiddleware = require("../middleware/auth.middleware");
+const authorMiddleware = require("../middleware/author.middleware");
+router.post("/create", authMiddleware, PostController.createPost);
+router.get("/", PostController.getPost);
+router.delete("/delete/:id", authMiddleware, authorMiddleware, PostController.deletePost);
+router.put("/update/:id", authMiddleware, authorMiddleware, PostController.updatePost);
+router.get("/get-one/:id", PostController.getPostById);
+module.exports = router;
