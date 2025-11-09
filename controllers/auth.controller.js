@@ -88,6 +88,47 @@ class AuthController {
       next(error);
     }
   }
+  async updateProfile(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          BaseError.BadRequestError("Validation Error", errors.array())
+        );
+      }
+      const data = req.body;
+      const userId = req.params.id;
+      const resData = await authService.updateProfile(data, req.files?.image, userId);
+      res.send(resData);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async removeUser(req, res, next) {
+    try {
+      const userId = req.params.id;
+      const resData = await authService.removeUser(userId);
+      res.send(resData);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async updatePassword(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          BaseError.BadRequestError("Validation Error", errors.array())
+        );
+      }
+      const data = req.body;
+      const userId = req.params.id;
+      const resData = await authService.updatePassword(data, userId);
+      res.send(resData);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new AuthController();

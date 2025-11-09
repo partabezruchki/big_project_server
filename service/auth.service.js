@@ -91,6 +91,76 @@ class AuthService {
   //   const userDto = new UserDto(user);
   //   return userDto;
   // }
+
+  async updateProfile(data, image, id) {
+    const { name, email, phone, address } = data;
+
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (phone) updateData.phone = phone;
+    if (address) updateData.address = address;
+
+    // if (password) {
+    //   updateData.password = await bcrypt.hash(password, 10);
+    // }
+    if (image) {
+      const oldUser = await userModel.findById(id);
+      if (!oldUser) throw BaseError.BadRequestError("User not found");
+
+      if (oldUser.image) {
+        const oldPath = path.join(
+          __dirname,
+          "..",
+          "public/user",
+          oldUser.image
+        );
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      }
+
+      const fileName = fileService.userImage(image);
+      updateData.image = fileName;
+    }
+    const user = await userModel.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!user) throw BaseError.BadRequestError("User not defined");
+
+    return user;
+  }
+
+  async updatePassword(data, id) {
+    const { oldPassword, newPassword } = data;
+
+    const user = await userModel.findById(id);
+    if (!user) throw BaseError.BadRequestError("User not defined");
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) throw BaseError.BadRequestError("Old password is incorrect");
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    return { message: "Password updated successfully" };
+  }
+
+  async removeUser(id) {
+    const user = await userModel.findById(id);
+    if (!user) throw BaseError.BadRequestError("User not defined");
+
+    if (user.image) {
+      const filePath = path.join(__dirname, "..", "public/user", user.image);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    await user.deleteOne();
+
+    return { message: "User deleted successfully", user };
+  }
 }
 
 module.exports = new AuthService();

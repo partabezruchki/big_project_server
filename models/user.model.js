@@ -8,6 +8,8 @@ const userSchema = new Schema(
     isActivated: { type: Boolean, default: false },
     image: { type: String },
     isAdmin: { type: Boolean, default: false },
+    phone: { type: String },
+    address: { type: String },
   },
   {
     timestamps: true,

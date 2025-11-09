@@ -20,4 +20,6 @@ router.get("/activate/:id", authController.activation);
 router.post("/logout", authController.logout);
 router.get("/refresh", authController.refresh);
 router.get("/me", authMiddleware, authController.getMe);
+router.put("/update-profile/:id", authMiddleware, authController.updateProfile);
+router.put("/update-password/:id", authMiddleware, authController.updatePassword);
 module.exports = router;
