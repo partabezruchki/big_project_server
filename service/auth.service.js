@@ -5,6 +5,9 @@ const UserDto = require("../dtos/user.dto");
 const tokenService = require("./token.service");
 const mailService = require("./mail.service");
 const BaseError = require("../errors/baseError");
+const fs = require("fs");
+const path = require("path");
+
 class AuthService {
   async register(data, image) {
     const { name, email, password } = data;
